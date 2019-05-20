@@ -11,7 +11,6 @@ RUN mkdir /hygieia/config \
 EXPOSE 8080
 
 ENV PROP_FILE /hygieia/config/application.properties
-
 WORKDIR /hygieia
 
 COPY target/*.jar /hygieia

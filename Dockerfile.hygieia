@@ -1,0 +1,61 @@
+FROM centos:latest
+
+USER root
+
+# Copying Repos and Utilities for Hygieia
+COPY mongodb-3.2.repo /etc/yum.repos.d/mongo-3.2.repo
+COPY wait-for-it.sh /usr/bin/wait-for-it.sh
+COPY db/db-setup.sh /usr/bin/db-setup.sh
+COPY db/db-setup.js /tmp/db-setup.js
+COPY entrypoint.sh /usr/bin/entrypoint.sh
+
+# Installing all the dependencies
+RUN yum update -y \ 
+&& yum install -y wget unzip curl vim python-setuptools openssl sed \
+&& wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+&& rpm -ivh epel-release-latest-7.noarch.rpm \
+&& wget http://nginx.org/packages/centos/7/x86_64/RPMS/nginx-1.14.0-1.el7_4.ngx.x86_64.rpm \
+&& rpm -iv nginx-1.14.0-1.el7_4.ngx.x86_64.rpm \
+&& yum -y install mongodb-org \
+&& yum -y install nginx \
+&& yum clean all \
+&& chmod +x /usr/bin/wait-for-it.sh && chmod +x /usr/bin/db-setup.sh \
+&& chmod +x /usr/bin/entrypoint.sh && yum update -y && yum install -y java-1.8.0-openjdk \
+&& mkdir -p /hygieia-api/config && mkdir -p /hygieia-api-audit/config \
+&& mkdir -p /data/db
+
+ENV SPRING_DATA_MONGODB_HOST localhost
+ENV SPRING_DATA_MONGODB_PORT 27017
+
+# Hygieia API
+ENV HYGIEIA_API_PROP_FILE /hygieia-api/config/application.properties
+
+COPY api/target/*.jar /hygieia-api
+COPY api/docker/properties-builder.sh /hygieia-api/
+RUN chmod +x /hygieia-api/properties-builder.sh
+
+# Hygieia API Audit
+ENV HYGIEIA_API_AUDIT_PROP_FILE /hygieia-api-audit/config/application.properties
+
+COPY api-audit/target/*.jar /hygieia-api-audit
+COPY api-audit/docker/properties-builder.sh /hygieia-api-audit/
+RUN chmod +x /hygieia-api-audit/properties-builder.sh
+
+# UI Module
+COPY UI/docker/default.conf /etc/nginx/conf.d/default.conf.templ
+COPY UI/docker/conf-builder.sh /usr/bin/conf-builder.sh
+COPY UI/dist /usr/share/nginx/html
+RUN chown -R nginx:nginx /usr/share/nginx/html/
+
+
+# Volume /hygieia-api-audit/logs exposed for Hygieia API Audit
+# Volume /hygieia-api/logs exposed for Hygieia API
+VOLUME ["/hygieia-api/logs", "/hygieia-api-audit/logs", "/data/db"]
+
+# PORT 8082 for Hygieia API
+# PORT 8080 for Hygieia API Audit 
+# PORT 27017 for MongoDB
+EXPOSE 8082 8080 27017 80 443
+
+# MongoDB Entrypoint
+ENTRYPOINT ["/usr/bin/entrypoint.sh"]

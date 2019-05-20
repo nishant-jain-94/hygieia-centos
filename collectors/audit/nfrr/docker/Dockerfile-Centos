@@ -1,0 +1,20 @@
+FROM centos:latest
+
+USER root
+
+RUN mkdir /hygieia/config \
+ && yum update -y \
+ && yum install -y java-1.8.0-openjdk
+
+COPY *.jar /hygieia/
+COPY properties-builder.sh /hygieia/
+
+WORKDIR /hygieia
+
+VOLUME ["/hygieia/logs"]
+
+ENV PROP_FILE /hygieia/config/application.properties
+
+CMD ./properties-builder.sh && \
+  java -jar nfrr-audit-collector*.jar --spring.config.location=$PROP_FILE
+

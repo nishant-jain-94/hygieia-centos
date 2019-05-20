@@ -1,8 +1,12 @@
-FROM openjdk:8-jre
+FROM centos:latest
+
+USER root
 
 VOLUME ["/hygieia/logs"]
 
-RUN mkdir /hygieia/config
+RUN mkdir /hygieia/config \
+ && yum update -y \
+ && yum install -y java-1.8.0-openjdk
 
 EXPOSE 8080
 
