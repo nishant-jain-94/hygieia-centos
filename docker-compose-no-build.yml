@@ -4,9 +4,6 @@
 version: '3'
 services:
   db:
-    build: 
-      context: ./mongodb
-      dockerfile: Dockerfile
     image: jainnish94/hygieia-mongodb-centos
     ports:
       - "27017:27017"
@@ -14,17 +11,11 @@ services:
       - "db-data:/data/db"
 
   db-setup:
-    build:
-      context: ./db
-      dockerfile: Dockerfile
     image: jainnish94/hygieia-mongodb-setup
     depends_on:
       - db
 
   api:
-    build:
-      context: api
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-api
     depends_on:
       - db-setup
@@ -32,9 +23,6 @@ services:
       - "8080:8080"
 
   api-audit:
-    build:
-      context: api-audit
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-api-audit
     depends_on:
       - db-setup
@@ -42,9 +30,6 @@ services:
       - "8081:8080"
 
   ui:
-    build: 
-      context: UI
-      dockerfile: Dockerfile
     image: jainnish94/hygieia-ui
     depends_on:
       - api
@@ -52,167 +37,105 @@ services:
       - "3000:80"
 
   appdynamics-collector:
-    build: 
-      context: collectors/performance/appdynamics
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-appdynamics-collector
     depends_on:
       - db-setup
 
   artifactory-artifact-collector:
-    build: 
-      context: collectors/artifact/artifactory
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-artifactory-artifact-collector
     depends_on:
       - db-setup
 
   bamboo-build-collector:
-    build: 
-      context: collectors/build/bamboo
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-bamboo-build-collector
     depends_on:
       - db-setup
 
   bitbucket-collector:
-    build: 
-      context: collectors/scm/bitbucket
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-bitbucket-scm-collector
     depends_on:
       - db-setup
 
   chat-ops-collector:
-    build: 
-      context: collectors/misc/chat-ops
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-chat-ops-collector
     depends_on:
       - db-setup
 
   hpsm-cmdb-collector:
-    build: 
-      context: collectors/cmdb/hpsm
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-hpsm-cmdb-collector
     depends_on:
       - db-setup
 
   github-collector:
-    build: 
-      context: collectors/scm/github
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-github-scm-collector
     depends_on:
       - db-setup
 
   github-graphql-collector:
-    build: 
-      context: collectors/scm/github-graphql
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-github-graphql-scm-collector
     depends_on:
       - db-setup
 
   gitlab-feature-collector:
-    build: 
-      context: collectors/feature/gitlab
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-gitlab-feature-collector
     depends_on:
       - db-setup
 
   gitlab-scm-collector:
-    build: 
-      context: collectors/scm/gitlab
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-gitlab-scm-collector
     depends_on:
       - db-setup
 
   jenkins-build-collector:
-    build: 
-      context: collectors/build/jenkins
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-jenkins-build-collector
     depends_on:
       - db-setup
 
   jenkins-codequality-collector:
-    build: 
-      context: collectors/build/jenkins-codequality
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-jenkins-codequality-collector
     depends_on:
       - db-setup
 
   jenkins-cucumber-test-collector:
-    build: 
-      context: collectors/build/jenkins-cucumber
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-jenkins-cucumber-test-collector
     depends_on:
       - db-setup
 
   jira-collector:
-    build: 
-      context: collectors/feature/jira
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-jira-feature-collector
     depends_on:
       - db-setup
 
   nexus-iq-collector:
-    build: 
-      context: collectors/library-policy/nexus-iq-collector
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-nexus-iq-collector
     depends_on:
       - db-setup
 
   sonar-codequality-collector:
-    build: 
-      context: collectors/build/sonar
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-sonar-codequality-collector
     depends_on:
       - db-setup
 
   # subversion-collector:
-  #   build: collectors/scm/subversion
-  #   image: jainnish94/hygieia-subversion-scm-collector
-  #   depends_on:
+  #
   #     - db-setup
 
   udeploy-collector:
-    build: 
-      context: collectors/deploy/udeploy
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-udeploy-collector
     depends_on:
       - db-setup
 
   versionone-collector:
-    build: 
-      context: collectors/feature/versionone
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-versionone-collector
     depends_on:
       - db-setup
 
   xldeploy-collector:
-    build: 
-      context: collectors/deploy/xldeploy
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-xldeploy-collector
     depends_on:
       - db-setup
 
   score-collector:
-    build: 
-      context: collectors/misc/score
-      dockerfile: Dockerfile-Centos
     image: jainnish94/hygieia-score-collector
     depends_on:
       - db-setup
